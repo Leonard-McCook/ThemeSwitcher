@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ThemeChangeView: View {
     @Environment(\.colorScheme) private var scheme
-    @AppStorage("user_theme") private var userTheme: Theme = .systemDefault
+    @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
+    /// For Sliding Effect
+    @Namespace private var animation
     var body: some View {
         VStack(spacing: 15) {
             Circle()
@@ -23,7 +25,38 @@ struct ThemeChangeView: View {
             Text("Pop or subtle, Day or night.\nCustomize your interface.")
                 .multilineTextAlignment(.center)
             
+            /// Custom Segmented Picker
+            HStack(spacing: 0) {
+                ForEach(Theme.allCases, id: \.rawValue) {theme in
+                    Text(theme.rawValue)
+                        .padding(.vertical, 10)
+                        .frame(width: 100)
+                        .background {
+                            ZStack {
+                                if userTheme == theme {
+                                    Capsule()
+                                        .fill(.themeBG)
+                                        .matchedGeometryEffect(id: "ACTIVATEAB", in: animation)
+                                }
+                            }
+                            .animation(.snappy, value: userTheme)
+                        }
+                        .contentShape(.rect)
+                        .onTapGesture {
+                            userTheme = theme
+                        }
+                    
+                }
+            }
+            .padding(3)
+            .background(.primary.opacity(0.6), in: .capsule)
+            .padding(.top, 20)
         }
+        /// Max Height = 410
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(height: 410)
+        .background(.themeBG)
+        .clipShape(.rect(cornerRadius: 30))
     }
 }
 
