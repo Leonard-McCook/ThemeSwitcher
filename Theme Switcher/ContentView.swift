@@ -8,14 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    /// View Properties
+    @State private var changeTheme: Bool = false
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                Section("Appearance") {
+                    Button("Change Theme") {
+                        changeTheme.toggle()
+                    }
+                }
+            }
+            .navigationTitle("Settings")
         }
-        .padding()
+        .sheet(isPresented: $changeTheme, content: {
+            ThemeChangeView()
+            /// Since Max Height is 410
+                .presentationDetents([.height(410)])
+                .presentationBackground(.clear)
+        })
     }
 }
 
