@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ThemeChangeView: View {
-    @Environment(\.colorScheme) private var scheme
+    var scheme: ColorScheme
     @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
     /// For Sliding Effect
     @Namespace private var animation
@@ -58,12 +58,13 @@ struct ThemeChangeView: View {
         .background(.themeBG)
         .clipShape(.rect(cornerRadius: 30))
         .padding(.horizontal, 15)
+        .environment(\.colorScheme, scheme)
         
     }
 }
 
 #Preview {
-    ThemeChangeView()
+    ContentView()
 }
 
 
@@ -81,6 +82,17 @@ enum Theme: String, CaseIterable {
             return .sun
         case .dark:
             return .moon
+        }
+    }
+    
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .systemDefault:
+            return nil
+        case .light:
+            return .light
+        case .dark:
+            return .dark
         }
     }
 }
