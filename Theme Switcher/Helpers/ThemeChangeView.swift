@@ -12,11 +12,27 @@ struct ThemeChangeView: View {
     @AppStorage("userTheme") private var userTheme: Theme = .systemDefault
     /// For Sliding Effect
     @Namespace private var animation
+    /// View Properties
+    @State private var circleOffset: CGSize
+    init(scheme: ColorScheme) {
+        self.scheme = scheme
+        let isDark = scheme == .dark
+        self._circleOffset = .init(initialValue: CGSize(width: isDark ? 30 : 150, height: isDark ? -25 : -150))
+    }
     var body: some View {
         VStack(spacing: 15) {
             Circle()
                 .fill(userTheme.color(scheme).gradient)
                 .frame(width: 150, height: 150)
+                .mask {
+                    /// Inverted Mask
+                    Rectangle()
+                        .overlay {
+                            Circle()
+                                .offset(circleOffset)
+                                .blendMode(.destinationOut)
+                        }
+                }
             
             Text("Choose a Style")
                 .font(.title2.bold())
@@ -59,12 +75,17 @@ struct ThemeChangeView: View {
         .clipShape(.rect(cornerRadius: 30))
         .padding(.horizontal, 15)
         .environment(\.colorScheme, scheme)
-        
+        .onChange(of: scheme, initial: false) { _, newValue in
+            let isDark = newValue == .dark
+            withAnimation(.bouncy) {
+                circleOffset = CGSize(width: isDark ? 30 : 150, height: isDark ? -25 : -150)
+            }
+        }
     }
 }
 
 #Preview {
-    ContentView()
+    ThemeChangeView(scheme: .light)
 }
 
 
